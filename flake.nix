@@ -1,9 +1,23 @@
 {
-  description = "Eiros hardware configuration - vwestberg workstation";
-
-  outputs = { nixpkgs, ... }: {
-    nixosModules.default = { ... }: {
-      eiros.system.hardware.cpu.vendor = "amd";
+  description = "Hardware configuration for vwestberg's Framework 16";
+  outputs =
+    { nixos_hardware, self, ... }@inputs:
+    let
+      import_modules = import ./resources/nix/import_modules.nix;
+    in
+    {
+      inputs = inputs;
+      nixosModules.default = {
+        imports = [
+          nixos_hardware.nixosModules.framework-16-7040-amd
+          ./hardware-configuration.nix
+        ]
+        ++ (import_modules ./settings);
+      };
+    };
+  inputs = {
+    nixos_hardware = {
+      url = "github:NixOS/nixos-hardware";
     };
   };
 }
