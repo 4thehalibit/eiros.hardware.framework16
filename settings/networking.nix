@@ -5,8 +5,11 @@
   # no-signature" even under allow-downgrade — breaking resolution on those networks.
   # Disable DNSSEC enforcement so the network-provided resolver is trusted as-is;
   # this keeps internal hostnames resolvable while fixing public lookups.
-  # mkForce: upstream eiros flake.nix sets this to "allow-downgrade"; override it.
-  services.resolved.dnssec = lib.mkForce "false";
+  # Upstream eiros flake.nix sets services.resolved.settings.Resolve.DNSSEC =
+  # "allow-downgrade" directly, so we must mkForce at that same low-level option —
+  # mkForce on the higher-level `services.resolved.dnssec` doesn't carry its priority
+  # down to settings.Resolve.DNSSEC, leaving the conflict unresolved.
+  services.resolved.settings.Resolve.DNSSEC = lib.mkForce "false";
 
   # Prefer ethernet over wifi when both are connected. Force Cloudflare/Google DNS
   # on every connection so DNSSEC and resolution behave the same across networks
