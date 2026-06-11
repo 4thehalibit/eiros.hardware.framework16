@@ -1,11 +1,12 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   # Many local/corporate resolvers (e.g. the LSE office gateway 192.168.4.1) return
   # unsigned answers, which systemd-resolved rejects as "DNSSEC validation failed:
   # no-signature" even under allow-downgrade — breaking resolution on those networks.
   # Disable DNSSEC enforcement so the network-provided resolver is trusted as-is;
   # this keeps internal hostnames resolvable while fixing public lookups.
-  services.resolved.dnssec = "false";
+  # mkForce: upstream eiros flake.nix sets this to "allow-downgrade"; override it.
+  services.resolved.dnssec = lib.mkForce "false";
 
   # Prefer ethernet over wifi when both are connected. Force Cloudflare/Google DNS
   # on every connection so DNSSEC and resolution behave the same across networks
